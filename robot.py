@@ -70,8 +70,80 @@ class Controller:
                 time.sleep(0.5)
         raise RuntimeError("Unable to connect to XBox controller after 100 attempts")
 
+    def getConnectionStatus(self):
+        return self.xbox.connected()
+
     def close(self):
         self.xbox.close()
+
+    def dPadUpButton(self):
+        return self.xbox.dpadUp()
+
+    def dPadRightButton(self):
+        return self.xbox.dpadRight()
+
+    def dPadDownButton(self):
+        return self.xbox.dpadDown()
+
+    def dPadLeftButton(self):
+        return self.xbox.dpadLeft()
+
+    def leftXButton(self):
+        return self.xbox.leftX()
+
+    def leftYButton(self):
+        return self.xbox.leftY()
+
+    def rightXButton(self):
+        return self.xbox.rightX()
+
+    def rightYButton(self):
+        return self.xbox.rightY()
+
+    def backButton(self):
+        return self.xbox.Back()
+
+    def guideButton(self):
+        return self.xbox.Guide()
+
+    def startButton(self):
+        return self.xbox.Start()
+
+    def leftThumbstickButton(self):
+        return self.xbox.leftThumbstick()
+
+    def rightThumbstickButton(self):
+        return self.xbox.rightThumbstick()
+
+    def aButton(self):
+        return self.xbox.A()
+
+    def bButton(self):
+        return self.xbox.B()
+
+    def yButton(self):
+        return self.xbox.Y()
+
+    def xButton(self):
+        return self.xbox.X()
+
+    def leftBumperButton(self):
+        return self.xbox.leftBumper()
+
+    def rightBumperButton(self):
+        return self.xbox.rightBumper()
+
+    def leftTriggerLocation(self):
+        return self.xbox.leftTrigger()
+
+    def rightTriggerLocation(self):
+        return self.xbox.rightTrigger()
+
+    def leftThumbstickLocation(self):
+        return self.xbox.leftStick()
+
+    def rightThumbstickLocation(self):
+        return self.xbox.rightStick()
 
 
 class Compass:
@@ -178,7 +250,7 @@ class Robot: # ties all other classes together, and allows functions that use se
 		except:
 			pass
 		print("Processes Safely Stopped")
-        
+
     def stop(self):
         self.motion.forward(0)
 
