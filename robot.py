@@ -1,7 +1,10 @@
 import ThunderBorg3
 from Adafruit_BNO055 import BNO055
+import atexit
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
 
-class motion:
+class Motion:
     def __init__(self,robot):
         self.robot=robot
         self.robot.front=1 # used for determining which side of the robot is considered the front, intended for use with a controller. 0 is considered the side which the camera is on.
@@ -9,7 +12,7 @@ class motion:
         pass
 
     def backward(self,speed):
-        pass
+        self.forward(-speed)
 
     def toggleFront(self):
         self.robot.front^=1
@@ -26,16 +29,18 @@ class motion:
         return "Attachment-side"
 
 
-class controller:
+class Controller:
     def __init__(self,robot):
         self.robot=robot
         try:
             self.xbox=xbox.Joystick()
         except:
             raise RunTimeError("Xbox controller not found")
+    def close(self):
+        self.xbox.close()
 
 
-class compass:
+class Compass:
     def __init__(self,robot):
         self.robot=robot
         self.started=False # prevents fron trying to start the compass several times which would raise an error
@@ -98,7 +103,7 @@ class compass:
 					raise RuntimeError("Unable to write to compass")
 
 
-class thunderborg:
+class Thunderborg:
     def __init__(self,robot):
         self.robot=robot
         self.ZB=ThunderBorg3.ThunderBorg()
@@ -107,6 +112,31 @@ class thunderborg:
         self.ZB.init()
 
 
-class robot: # ties all other classes together, and allows functions that use several low level components
+class Robot: # ties all other classes together, and allows functions that use several low level components
     def __init__(self):
         pass
+
+    def shutdown(self):
+		try:
+			GPIO.cleanup()
+		except:
+			pass
+		try:
+			self.controller.close()
+		except:
+			pass
+		try:
+			pass # shut down any cameras
+		except:
+			pass
+		try:
+			self.stop()
+		except:
+			pass
+		print("Processes Safely Stopped")
+    def stop(self):
+        self.motion.forward(0)
+
+        
+robot=Robot()
+atexit.register(robot.shutdown) #
