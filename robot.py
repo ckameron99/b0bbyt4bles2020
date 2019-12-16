@@ -67,7 +67,7 @@ class compass:
 
     def calibrate(self):
 		for i in range(50):
-			print(self.CalibValues())
+			print(self.getCalibrationValues())
 			time.sleep(0.2)
 
     def getHeading(self):
@@ -85,6 +85,9 @@ class compass:
     def getCalibrationStatus(self):
 		sys, gyro, accel, mag = self.bno.get_calibration_status()
 		return True if min([sys,gyro,accel,mag]) == 3 else False
+
+    def getCalibrationValues(self):
+        return self.bno.get_calibration_status()
 
     def setCalibrationValues(self,values):
 		for i in range(10):
