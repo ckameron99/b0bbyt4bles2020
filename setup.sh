@@ -7,3 +7,4 @@ alias python3=python3.8
 
 pip install pillow
 pip install matplotlib
+pip install numpy
