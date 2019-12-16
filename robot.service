@@ -1,0 +1,14 @@
+[Unit]
+Description=starts robot remote code
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 -u remote.py
+WorkingDirectory=/home/pi/b0bbyt4bles2020
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
