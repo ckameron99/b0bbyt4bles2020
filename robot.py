@@ -8,11 +8,41 @@ class Motion:
     def __init__(self,robot):
         self.robot=robot
         self.robot.front=1 # used for determining which side of the robot is considered the front, intended for use with a controller. 0 is considered the side which the camera is on.
-    def forward(self,speed):
-        pass
+        self.leftSpeed=0
+        self.rightSpeed=0
+    def forward(self,leftSpeed,rightSpeed=None):
+        if rightSpeed is None:
+            rightSpeed=leftSpeed
+        if not self.reverse:
+			self.robot.thunderborg.ZB.SetMotor1(speed1)
+			self.robot.thunderborg.ZB.SetMotor2(-speed2) #Remove /2
+			self.rightSpeed = speed2
+			self.leftSpeed = speed1
+		else:
+			self.robot.thunderborg.ZB.SetMotor1(-speed2)
+			self.robot.thunderborg.ZB.SetMotor2(speed1) #Remove /2
+			self.rightSpeed = speed1
+			self.leftSpeed = speed2
 
-    def backward(self,speed):
-        self.forward(-speed)
+    def incrementSpeed(self,IncL,IncR):
+		#if self.rightSpeed + IncR > 1 or self.rightSpeed + IncR < -1 or self.leftSpeed + IncL > 1 or self.leftSpeed < -1:
+		#	raise Exception("Cant increment motors above 1 or below -1")
+		self.rightSpeed += IncR
+		self.leftSpeed += IncL
+		self.forward(self.leftSpeed,self.rightSpeed)
+
+    def stop(self):
+        self.softStop(0.5)
+
+    def softStop(self,timeToStop=0.5):
+        DecL = (self.leftSpeed/100) * -1
+		DecR = (self.rightSpeed/100) * -1
+		for i in range(100):
+			self.incrementSpeed(DecL, DecR)
+			time.sleep(timeTo/100)
+    def hardStop(self):
+        self.forward(0,0)
+
 
     def toggleFront(self):
         self.robot.front^=1
@@ -32,10 +62,13 @@ class Motion:
 class Controller:
     def __init__(self,robot):
         self.robot=robot
-        try:
-            self.xbox=xbox.Joystick()
-        except:
-            raise RunTimeError("Xbox controller not found")
+        for i in range(100):
+            try:
+                self.xbox=xbox.Joystick()
+                return
+            except:
+                time.sleep(0.5)
+        raise RuntimeError("Unable to connect to XBox controller after 100 attempts")
     def close(self):
         self.xbox.close()
 
@@ -103,6 +136,11 @@ class Compass:
 					raise RuntimeError("Unable to write to compass")
 
 
+class Lidar:
+    def __init__(self):
+        self.forwardAngle=0
+
+
 class Thunderborg:
     def __init__(self,robot):
         self.robot=robot
@@ -114,7 +152,10 @@ class Thunderborg:
 
 class Robot: # ties all other classes together, and allows functions that use several low level components
     def __init__(self):
-        pass
+        self.thunderborg=Thunderborg(self)
+        self.controller=Controller(self)
+        self.compass=Compass(self)
+
 
     def shutdown(self):
 		try:
@@ -137,6 +178,6 @@ class Robot: # ties all other classes together, and allows functions that use se
     def stop(self):
         self.motion.forward(0)
 
-        
+
 robot=Robot()
 atexit.register(robot.shutdown) #
